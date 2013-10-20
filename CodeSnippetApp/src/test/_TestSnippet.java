@@ -7,6 +7,7 @@ import static org.hamcrest.CoreMatchers.*;
 import java.util.ArrayList;
 
 import model.Snippet;
+import model.SnippetManager;
 
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -50,7 +51,7 @@ public class _TestSnippet {
 		manager.addSnippet(a);
 		manager.printAll();
 		assertThat(a.getLanguage(), equalTo("Java"));	
-		
+		assertThat(a.getSnippetTitle(), equalTo("Boo"));
 	}
 	
 	

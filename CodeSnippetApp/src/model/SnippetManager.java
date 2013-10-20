@@ -1,8 +1,7 @@
-package test;
+package model;
 
 import java.util.ArrayList;
 
-import model.Snippet;
 
 /** singleton object
  * stores the list of snippets in ArrayList
