@@ -1,5 +1,9 @@
-1 make a simple db connection
+1 make a simple db connection DONE
+
 2 make a simple user interface
+
 3 test out the syntax highlighting library
-4 integrate the syntax highlighting library\
+
+4 integrate the syntax highlighting library
+
 5 refactor out the language types into a DB table

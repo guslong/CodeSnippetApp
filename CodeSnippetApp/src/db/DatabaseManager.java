@@ -10,27 +10,36 @@ import java.sql.Statement;
 
 public class DatabaseManager {
 
-    /** A connection to a database */
-    private Connection conn;
-    /** An executable SQL statement */
-    private Statement stmt;
-    /** The result of an executed SQL statement */
-    private ResultSet rset;
     /** the JDBC connection URI */
     private static final String DB_CONN = "jdbc:mysql://localhost:3306/";
+
     /** the database */
     public static final String DB_NAME = "addressBookDB";
 
+    /** username */
     public static final String USERNAME = "root";
-    
+
+    /** password */
     public static final String PASSWORD = "Glasn0st!";
 
+    /** table name */
     public static final String TABLE_NAME = "snippet";
 
-    public DatabaseManager() { 
-	// the constructor for the database manager
-	// Connect to database and execute the SQL commands for creating and
-	// initializing the Snippet table.
+    /** A connection to a database */
+    private Connection conn;
+
+    /** An executable SQL statement */
+    private Statement stmt;
+
+    /** The result of an executed SQL statement */
+    private ResultSet rset;
+
+    /**
+     * the constructor for the database manager: connect to database and execute
+     * the SQL commands for creating and initializing the table.
+     */
+    public DatabaseManager() {
+
 	try {
 	    Class.forName("com.mysql.jdbc.Driver");
 	    System.out.println("Found driver...");
@@ -53,13 +62,11 @@ public class DatabaseManager {
 	    String[] tableType = { "TABLE" };
 	    ResultSet rs = aboutDB.getTables(null, null, TABLE_NAME, tableType);
 	    if (!inspectForTable(rs, TABLE_NAME)) {
-		// there is no table-- call the initTable() method to create one
+		// there is no table - call the initTable() method to create one
 		System.out.println("No table called " + TABLE_NAME
 			+ " found. Creating new one.");
-		String[] SQL = initTable();
-		for (int i = 0; i < SQL.length; i++) {
-		    stmt.execute(SQL[i]);
-		}
+		String SQL = initTable();
+		stmt.execute(SQL);
 	    }
 	    System.out.println("Connected...");
 	} catch (SQLException e) {
@@ -118,7 +125,8 @@ public class DatabaseManager {
      * POST: ResultSet instance value is returned, its value remains the same as upon entry.
      * </pre>
      */
-    public ResultSet getResultSet() { // a  method that will let the GUI get the resultSet to manipulate it
+    public ResultSet getResultSet() { // a method that will let the GUI get the
+				      // resultSet to manipulate it
 	return rset;
     }
 
@@ -131,7 +139,8 @@ public class DatabaseManager {
      * POST: If remove is true, table is dropped, otherwise it is preserved.  Open Connection and Statement are closed.
      * </pre>
      * 
-     * @param remove - boolean: true if the table should be dropped
+     * @param remove
+     *            - boolean: true if the table should be dropped
      */
     public void close(boolean remove) { // closes all open connections
 	try {
@@ -186,13 +195,12 @@ public class DatabaseManager {
 	return false;
     }
 
-
-    private String[] initTable() {
+    private String initTable() {
 	// Create a new table
-	String[] SQL = { "create table " + TABLE_NAME + " ("
+	String SQL = "create table " + TABLE_NAME + " ("
 		+ "ID int NOT NULL PRIMARY KEY AUTO_INCREMENT, "
 		+ "SNIPPET_TITLE  varchar (64)," + "SNIPPET_TEXT text,"
-		+ "SNIPPET_LANG varchar(16)" + ");" };
+		+ "SNIPPET_LANG varchar(16)" + ");";
 	return SQL;
     }
 }
