@@ -19,29 +19,14 @@ public class _TestSnippet {
 		manager = SnippetManager.getInstance();
 	}
 	
-//	@Test
-//	public void newSnippetObject() {
-//		Snippet snip = new Snippet();
-//		assertNotNull(snip);
-//		//System.out.println(snip.getSnippetID());
-//	}
-//	
-//	@Test
-//	public void getSnippetManager() {
-//		// must return the same object, as it is a singleton
-//	
-//		SnippetManager manager2 = SnippetManager.getInstance();
-//		assertEquals(manager, manager2);		
-//	}
-	
 	@Test
-	public void getSnippetsFromManagerSingleton() {
-		
-		ArrayList<Snippet> snippetsList = manager.getSnippets();
-		assertNotNull(snippetsList);
-	}
+	public void saveNewSnippetObject() {
+		Snippet snip = new Snippet();
+		snip.setLanguage("PHP");
+		snip.setSnippetTitle("Some php");
+		snip.setSnippetText("blah ?php blah");
+		manager.addSnippet(snip);
 
-	
-	
+	}
 	
 }

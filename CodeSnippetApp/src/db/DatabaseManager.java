@@ -94,6 +94,7 @@ public class DatabaseManager {
 	    result = stmt.executeQuery(query);
 	} catch (SQLException e) {
 	    LOGGER.log(Level.ERROR,"SQL Exception");
+	    e.printStackTrace();
 	}
 	return result;
     }
@@ -117,6 +118,7 @@ public class DatabaseManager {
 	    return true;
 	} catch (SQLException e) {
 	    LOGGER.log(Level.ERROR,"SQL Exception");
+	    e.printStackTrace();
 	    return false;
 	}
 	

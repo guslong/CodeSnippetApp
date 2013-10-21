@@ -78,9 +78,11 @@ public class SnippetManager {
 
 	// build an insert query
 	String query = "insert into " + DatabaseManager.TABLE_NAME
-		+ "(SNIPPET_TITLE, SNIPPET_TEXT, SNIPPET_LANG) values " + "('"
-		+ snippet.getSnippetTitle() + "' ," + " '" + snippet.getSnippetText() + "' ,"
-		+ " '" + snippet.getLanguage() + "');";
+		+ "(SNIPPET_TITLE, SNIPPET_TEXT, SNIPPET_LANG, DATE_CREATED) values " + "('"
+		+ snippet.getSnippetTitle() + "' ," 
+		+ " '" + snippet.getSnippetText() + "' ,"
+		+ " '" + snippet.getLanguage() + "' ,"
+		+ " '" + snippet.getSQLDate() + "');";
 
 	dbm.doInsertQuery(query);
     }
@@ -107,6 +109,8 @@ public class SnippetManager {
 		newSnippet.setSnippetText(resultSet.getString("SNIPPET_TEXT"));
 		// get the language
 		newSnippet.setLanguage(resultSet.getString("SNIPPET_LANG"));
+		// get the created date
+		newSnippet.setDateCreated(resultSet.getDate("DATE_CREATED"));
 		// add the object to the array
 		results.add(newSnippet);
 	    }

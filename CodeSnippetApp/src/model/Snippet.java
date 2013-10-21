@@ -1,5 +1,8 @@
 package model;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+
 
 /**
  * a snippet contains the business logic for code snippets it is the main model class of the application
@@ -13,10 +16,12 @@ public class Snippet {
     private String snippetTitle;
     private String snippetText;
     private String language;
+    private java.util.Date dateCreated;
 
     /** no arg constructor */
     public Snippet() {
-
+	dateCreated = new java.util.Date();
+	
     }
 
     public String getSnippetTitle() {
@@ -49,6 +54,16 @@ public class Snippet {
 
     public int getSnippetID() {
 	return snippetID;
+    }
+
+    // converts the date to sql datetime for compatibility with the mysql database
+    public Timestamp getSQLDate() {
+	Timestamp sqldate = new java.sql.Timestamp(dateCreated.getTime()); 
+	return sqldate;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public String toString() {
