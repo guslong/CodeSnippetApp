@@ -79,20 +79,21 @@ public class DatabaseManager {
      * Executes the select query specified.
      * 
      * <pre>
-     * PRE:  Connection to database has been established. Query is assigned and is a simple
-     *       select statement against the table.
+     * PRE:  Connection to database has been established. Query is assigned and executed against the table.
      * POST: The query is executed.
      * </pre>
      * 
      * @param query
      *            a simple select query against the table
      */
-    public void doGetQuery(String query) {
+    public ResultSet doGetQuery(String query) {
+	ResultSet result = null;
 	try {
-	    rset = stmt.executeQuery(query);
+	    result = stmt.executeQuery(query);
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	}
+	return result;
     }
 
     /* doInsertQuery */
@@ -108,27 +109,17 @@ public class DatabaseManager {
      * @param query
      *            a simple insert query into the Listings table
      */
-    public void doInsertQuery(String query) {
+    public boolean doInsertQuery(String query) {
 	try {
 	    stmt.executeUpdate(query);
+	    return true;
 	} catch (SQLException e) {
 	    e.printStackTrace();
+	    return false;
 	}
+	
     }
 
-    /* getResultSet */
-    /**
-     * Returns the current value of the ResultSet instance
-     * 
-     * <pre>
-     * PRE:  True
-     * POST: ResultSet instance value is returned, its value remains the same as upon entry.
-     * </pre>
-     */
-    public ResultSet getResultSet() { // a method that will let the GUI get the
-				      // resultSet to manipulate it
-	return rset;
-    }
 
     /* close */
     /**
