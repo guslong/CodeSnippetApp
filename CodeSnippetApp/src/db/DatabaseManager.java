@@ -8,7 +8,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 public class DatabaseManager {
+
+    private static Logger LOGGER = Logger.getLogger(DatabaseManager.class.getName());
 
     /** the JDBC connection URI */
     private static final String DB_CONN = "jdbc:mysql://localhost:3306/";
@@ -31,9 +36,6 @@ public class DatabaseManager {
     /** An executable SQL statement */
     private Statement stmt;
 
-    /** The result of an executed SQL statement */
-    private ResultSet rset;
-
     /**
      * the constructor for the database manager: connect to database and execute
      * the SQL commands for creating and initializing the table.
@@ -42,9 +44,9 @@ public class DatabaseManager {
 
 	try {
 	    Class.forName("com.mysql.jdbc.Driver");
-	    System.out.println("Found driver...");
+	    LOGGER.log(Level.INFO,"Found driver");
 	} catch (ClassNotFoundException e) {
-	    System.out.println("Failed to load JDBC/ODBC driver.");
+	    LOGGER.log(Level.ERROR,"Failed to load JDBC/ODBC driver.");
 	    e.printStackTrace();
 	    return;
 	}
@@ -63,12 +65,12 @@ public class DatabaseManager {
 	    ResultSet rs = aboutDB.getTables(null, null, TABLE_NAME, tableType);
 	    if (!inspectForTable(rs, TABLE_NAME)) {
 		// there is no table - call the initTable() method to create one
-		System.out.println("No table called " + TABLE_NAME
+		LOGGER.log(Level.ERROR, "No table called " + TABLE_NAME
 			+ " found. Creating new one.");
 		String SQL = initTable();
 		stmt.execute(SQL);
 	    }
-	    System.out.println("Connected...");
+	    LOGGER.log(Level.INFO,"Connected to database...");
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	}
@@ -91,7 +93,7 @@ public class DatabaseManager {
 	try {
 	    result = stmt.executeQuery(query);
 	} catch (SQLException e) {
-	    e.printStackTrace();
+	    LOGGER.log(Level.ERROR,"SQL Exception");
 	}
 	return result;
     }
@@ -114,7 +116,7 @@ public class DatabaseManager {
 	    stmt.executeUpdate(query);
 	    return true;
 	} catch (SQLException e) {
-	    e.printStackTrace();
+	    LOGGER.log(Level.ERROR,"SQL Exception");
 	    return false;
 	}
 	
@@ -137,14 +139,15 @@ public class DatabaseManager {
 	try {
 	    if (remove) {
 		stmt.execute("drop table snippet;");
-		System.out.println("Dropping table snippet");
+
+		LOGGER.log(Level.INFO,"dropped table snippet");
 		stmt.close();
 		conn.close();
 	    } else {
-		System.out.println("Saving table snippet");
+		LOGGER.log(Level.INFO,"saving table snippet");
 	    }
 	} catch (SQLException e) {
-	    System.out.println("\n*** SQLException caught ***\n");
+	    LOGGER.log(Level.ERROR,"SQL Exception");
 	    e.printStackTrace();
 	}
     }
@@ -175,8 +178,7 @@ public class DatabaseManager {
 		if (rsmd.getColumnLabel(i) == "TABLE_NAME")
 
 		    if (rs.getString(i).equals(tableName)) {
-			System.out.println("Found existing table: "
-				+ rs.getString(i));
+			LOGGER.log(Level.INFO,"found existing table " + tableName);
 			return true;
 		    }
 	    }

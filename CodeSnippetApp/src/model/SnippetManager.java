@@ -4,6 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import db.DatabaseManager;
 
 /**
@@ -13,6 +17,8 @@ import db.DatabaseManager;
 
 public class SnippetManager {
 
+    private static Logger LOGGER = Logger.getLogger(SnippetManager.class.getName());
+    
     /** the database manager to enable this object to communicate with the database */
     DatabaseManager dbm;
 
@@ -26,15 +32,22 @@ public class SnippetManager {
      * private constructor initialises the dbm and attempts to get the snippets from the db
      */
     private SnippetManager() {
-
+	// configure the log4j logger
+	BasicConfigurator.configure();
+	
 	// get an instance of the db manager
 	dbm = new DatabaseManager();
 
 	// get the existing snippets from the database
 	snippets = getAllFromDB();
+
 	if (snippets == null) {
 	    // if null, create a blank arraylist
 	    snippets = new ArrayList<Snippet>();
+	    LOGGER.log(Level.INFO, "Created a new arraylist");
+	}
+	else {
+	    LOGGER.log(Level.INFO, "Got from DB");
 	}
 	// otherwise the snippets ArrayList has been initialised by the DB
     }
@@ -79,7 +92,7 @@ public class SnippetManager {
 	ArrayList<Snippet> results = new ArrayList<>();
 
 	String query = "select * from " + DatabaseManager.TABLE_NAME;
-	System.out.println(query);
+	LOGGER.log(Level.INFO,"EXECUTING QUERY: \""+ query + "\"");
 	// loop through the rs and construct objects
 	try {
 	    ResultSet resultSet = dbm.doGetQuery(query);

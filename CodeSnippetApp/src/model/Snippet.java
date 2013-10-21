@@ -1,6 +1,5 @@
 package model;
 
-import java.util.UUID;
 
 /**
  * a snippet contains the business logic for code snippets it is the main model class of the application

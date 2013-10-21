@@ -1,18 +1,14 @@
 package test;
 
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 
 import model.Snippet;
 import model.SnippetManager;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
-
 
 public class _TestSnippet {
 
