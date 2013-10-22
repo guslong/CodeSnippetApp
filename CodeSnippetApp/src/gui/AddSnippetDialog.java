@@ -17,6 +17,9 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import model.Snippet;
+import model.SnippetManager;
+
 public class AddSnippetDialog extends JDialog {
 
     public class InputListener implements DocumentListener {
@@ -101,7 +104,17 @@ public class AddSnippetDialog extends JDialog {
 	south.add(addButton);
 	addButton.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent aEvent) {
-		// TODO get manager and insert the record into the database
+		SnippetManager manager = SnippetManager.getInstance();
+		
+		// get the input from the fields and create a new Snippet object
+		Snippet newSnippet = new Snippet();
+		newSnippet.setSnippetTitle(txtSnippetTitle.getText());
+		newSnippet.setLanguage(txtSnippetLang.getText());
+		newSnippet.setSnippetText(txtAreaSnippetText.getText());
+		
+		// insert the record into the database
+		manager.addSnippet(newSnippet);
+		
 		dispose(); // get rid of the dialog
 	    }
 	});
