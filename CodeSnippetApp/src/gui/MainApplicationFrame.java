@@ -21,8 +21,7 @@ public class MainApplicationFrame extends JFrame {
 	
 	// need a scroll view for the snippet text
 
-	// just for testing
-	new AddSnippetDialog(this);
+
     }
     
 }

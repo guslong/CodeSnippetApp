@@ -7,15 +7,14 @@ import javax.swing.JFrame;
 
 
 public class Application {
-
   
 	public static void main(String[] args) {
-	    
+	   
 		test();	
 	}
 
 	public static void test() {
-	    JFrame frame = new MainApplicationFrame();
-
+	    JFrame appFrame = new MainApplicationFrame();
+	    new AddSnippetDialog(appFrame);
 	}
 }
