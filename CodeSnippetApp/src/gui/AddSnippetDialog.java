@@ -14,8 +14,56 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class AddSnippetDialog extends JDialog {
+
+    public class InputListener implements DocumentListener {
+
+	/**
+	 * this method is called when data is entered into the fields. Checks to see if all fields are completed, then
+	 * enables the add button
+	 * 
+	 * @param e
+	 *            the document event
+	 */
+
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+	    if (txtSnippetTitle.getDocument().getLength() > 0
+		    && txtSnippetLang.getDocument().getLength() > 0
+		    && txtAreaSnippetText.getDocument().getLength() > 0) {
+		addButton.setEnabled(true);
+		
+	    }
+	}
+
+	/**
+	 * this method is called when data is remvoed from the fields. If any field is blank
+	 * the add button is disabled.
+	 * 
+	 * @param e
+	 *            the document event
+	 */
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+	    if (txtSnippetTitle.getDocument().getLength() == 0
+		    || txtSnippetLang.getDocument().getLength() == 0
+		    || txtAreaSnippetText.getDocument().getLength() == 0) {
+		addButton.setEnabled(false);
+
+	    }
+
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+	    /** Empty implementation. Method necessary for implementation of DocumentListener */
+
+	}
+
+    }
 
     private JTextField txtSnippetTitle = new JTextField(32);
     private JTextField txtSnippetLang = new JTextField(16);
@@ -28,21 +76,20 @@ public class AddSnippetDialog extends JDialog {
 	super(owner, "Add Snippet", true);
 	setSize(420, 300);
 	setLayout(new BorderLayout());
-	
-	
+
 	// Create the north panel which contains the title and language
 	JPanel north = new JPanel();
-	north.setLayout(new GridLayout(2,2));
+	north.setLayout(new GridLayout(2, 2));
 	JLabel labelTitle = new JLabel("Title");
 	JLabel labelLang = new JLabel("Language");
 	north.add(labelTitle);
 	north.add(labelLang);
 	north.add(txtSnippetTitle);
 	north.add(txtSnippetLang);
-	
+
 	// Create the center panel which contains the snippet text field
 	JPanel center = new JPanel();
-	txtAreaSnippetText = new JTextArea(10,34);
+	txtAreaSnippetText = new JTextArea(10, 34);
 	JScrollPane scrollPane = new JScrollPane(txtAreaSnippetText);
 	center.add(scrollPane);
 
@@ -65,7 +112,12 @@ public class AddSnippetDialog extends JDialog {
 		dispose();
 	    }
 	});
-	
+
+	// add document listener to the three fields
+	txtSnippetTitle.getDocument().addDocumentListener(new InputListener());
+	txtSnippetLang.getDocument().addDocumentListener(new InputListener());
+	txtAreaSnippetText.getDocument().addDocumentListener(new InputListener());
+
 	// add the panels to the container panel
 	Container contentPane = getContentPane();
 	contentPane.add(north, BorderLayout.NORTH);
