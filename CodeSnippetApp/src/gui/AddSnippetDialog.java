@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,6 +17,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import jsyntaxpane.DefaultSyntaxKit;
 
 import model.Snippet;
 import model.SnippetManager;
@@ -35,8 +38,7 @@ public class AddSnippetDialog extends JDialog {
 	@Override
 	public void insertUpdate(DocumentEvent e) {
 	    if (txtSnippetTitle.getDocument().getLength() > 0
-		    && txtSnippetLang.getDocument().getLength() > 0
-		    && txtAreaSnippetText.getDocument().getLength() > 0) {
+		    && txtSnippetLang.getDocument().getLength() > 0) {
 		addButton.setEnabled(true);
 		
 	    }
@@ -52,8 +54,7 @@ public class AddSnippetDialog extends JDialog {
 	@Override
 	public void removeUpdate(DocumentEvent e) {
 	    if (txtSnippetTitle.getDocument().getLength() == 0
-		    || txtSnippetLang.getDocument().getLength() == 0
-		    || txtAreaSnippetText.getDocument().getLength() == 0) {
+		    || txtSnippetLang.getDocument().getLength() == 0) {
 		addButton.setEnabled(false);
 
 	    }
@@ -73,13 +74,17 @@ public class AddSnippetDialog extends JDialog {
     private JTextArea txtAreaSnippetText;
     private JButton addButton;
     private JButton cancelButton;
-
+    private JEditorPane codeEditor;
+    
     public AddSnippetDialog(final JFrame owner) {
 	// set the dialog title and size
 	super(owner, "Add Snippet", true);
 	setSize(420, 300);
 	setLayout(new BorderLayout());
-
+	
+	// initalise the syntax formatting kit
+	DefaultSyntaxKit.initKit();
+	
 	// Create the north panel which contains the title and language
 	JPanel north = new JPanel();
 	north.setLayout(new GridLayout(2, 2));
@@ -90,11 +95,18 @@ public class AddSnippetDialog extends JDialog {
 	north.add(txtSnippetTitle);
 	north.add(txtSnippetLang);
 
-	// Create the center panel which contains the snippet text field
+	// Create the center panel which contains the code editor
 	JPanel center = new JPanel();
-	txtAreaSnippetText = new JTextArea(10, 34);
-	JScrollPane scrollPane = new JScrollPane(txtAreaSnippetText);
-	center.add(scrollPane);
+	codeEditor = new JEditorPane();
+	JScrollPane scrPane = new JScrollPane(codeEditor);
+	
+	// needs to set the content type depending on the language selection TODO
+	codeEditor.setContentType("text/java");
+	
+	// just a test TODO
+        codeEditor.setText("public static void main(String[] args) {\n}");
+        
+	center.add(scrPane);
 
 	// Create the south panel, which contains the buttons
 	JPanel south = new JPanel();
@@ -129,7 +141,6 @@ public class AddSnippetDialog extends JDialog {
 	// add document listener to the three fields
 	txtSnippetTitle.getDocument().addDocumentListener(new InputListener());
 	txtSnippetLang.getDocument().addDocumentListener(new InputListener());
-	txtAreaSnippetText.getDocument().addDocumentListener(new InputListener());
 
 	// add the panels to the container panel
 	Container contentPane = getContentPane();
