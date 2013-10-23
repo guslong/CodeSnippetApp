@@ -5,9 +5,12 @@ import java.util.HashMap;
 public enum Language {
 
     JAVA ("java"),
+    JSON ("json"),
     SCALA ("scala"),
-    C ("c"),
-    XHTML ("xhtml");
+    XHTML ("xhtml"),
+    XML ("xml"),
+    SQL ("sql")
+    ;
 
     private final String lang;
     

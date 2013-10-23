@@ -29,23 +29,26 @@ import model.SnippetManager;
 
 public class AddSnippetDialog extends JDialog {
 
-
-    public Language language;
+    public String language;
     
-
-
     private JTextField txtSnippetTitle = new JTextField(32);
     private JTextField txtSnippetLang = new JTextField(16);
-    private JTextArea txtAreaSnippetText;
     private JButton addButton;
     private JButton cancelButton;
+    
+    /** the pane for the codeEditor */
     private JEditorPane codeEditor;
+    
+    /** the combo box for the language selection */
     JComboBox<Language> comboBoxLang;
+
+    /** the part of the language code that gets passed to the editorpane */
+    private String langCode = "java";
     
     public AddSnippetDialog(final JFrame owner) {
 	// set the dialog title and size
 	super(owner, "Add Snippet", true);
-	setSize(428, 400);
+	setSize(650, 400);
 	setLayout(new BorderLayout());
 	
 	// initalise the syntax formatting kit
@@ -53,28 +56,31 @@ public class AddSnippetDialog extends JDialog {
 	
 	// Create the north panel which contains the title and language
 	JPanel north = new JPanel();
-	north.setLayout(new GridLayout(2, 2));
 	JLabel labelTitle = new JLabel("Title");
 	JLabel labelLang = new JLabel("Language");
-	
+
 	//create the languages combo box and a listener that sets the language
 	comboBoxLang = new JComboBox<Language>();
 	for (Language l : Language.values()) {
 	    comboBoxLang.addItem(l);
 	}
+	comboBoxLang.setSelectedIndex(0); // the first item on the enum is selected by default
+	
 	comboBoxLang.addActionListener(new ActionListener() {
 
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		String langSelected = comboBoxLang.getSelectedItem().toString();
-		System.out.println(langSelected);		
+		langCode = comboBoxLang.getSelectedItem().toString();
+		refreshEditorPane();   
 	    }
 	    
 	});
 	
+	
+
 	north.add(labelTitle);
-	north.add(labelLang);
 	north.add(txtSnippetTitle);
+	north.add(labelLang);
 	north.add(comboBoxLang);
 
 	// Create the center panel which contains the code editor
@@ -82,14 +88,13 @@ public class AddSnippetDialog extends JDialog {
 	codeEditor = new JEditorPane();
 	JScrollPane scrPane = new JScrollPane(codeEditor);	
 	//resize the codeEditor
-	codeEditor.setPreferredSize(new Dimension(400, 250));
+	codeEditor.setPreferredSize(new Dimension(600, 250));
 	// needs to set the content type depending on the language selection TODO
 	
-	String langCode = "text/" + Language.JAVA.toString();
-	System.out.println(langCode);
-	codeEditor.setContentType(langCode);	
-	// just a test TODO
-        codeEditor.setText("public static void main(String[] args) {\n}");    
+	//draw the editor the first time
+	codeEditor.setContentType("text/"+langCode );
+	codeEditor.setText("public static void main(String[] args) {\n}");    
+	
 	center.add(scrPane);
 
 	// Create the south panel, which contains the buttons
@@ -105,8 +110,8 @@ public class AddSnippetDialog extends JDialog {
 		// get the input from the fields and create a new Snippet object
 		Snippet newSnippet = new Snippet();
 		newSnippet.setSnippetTitle(txtSnippetTitle.getText());
-		newSnippet.setLanguage(txtSnippetLang.getText());
-		newSnippet.setSnippetText(txtAreaSnippetText.getText());
+		newSnippet.setLanguage(comboBoxLang.getSelectedItem().toString());
+		newSnippet.setSnippetText(codeEditor.getText());
 		
 		// insert the record into the database
 		manager.addSnippet(newSnippet);
@@ -124,8 +129,8 @@ public class AddSnippetDialog extends JDialog {
 
 	// add document listener to the three fields
 	txtSnippetTitle.getDocument().addDocumentListener(new InputListener());
-	txtSnippetLang.getDocument().addDocumentListener(new InputListener());
-
+	codeEditor.getDocument().addDocumentListener(new InputListener());
+	
 	// add the panels to the container panel
 	Container contentPane = getContentPane();
 	contentPane.add(north, BorderLayout.NORTH);
@@ -133,6 +138,18 @@ public class AddSnippetDialog extends JDialog {
 	contentPane.add(south, BorderLayout.SOUTH);
 
 	setVisible(true);
+    }
+
+    
+    /** redraws the editor pane with the current syntax formatting
+     * saves the text and repastes it in after refresh
+     * @param langCode
+     */
+    private void refreshEditorPane() {
+	String saveCurrentText = codeEditor.getText();
+	codeEditor.setContentType("text/"+langCode);
+	codeEditor.setText(saveCurrentText);
+	doLayout();
     }
     
     //LISTENERS
@@ -150,6 +167,7 @@ public class AddSnippetDialog extends JDialog {
 	@Override
 	public void insertUpdate(DocumentEvent e) {
 	    if (txtSnippetTitle.getDocument().getLength() > 0
+		    && codeEditor.getDocument().getLength() > 0
 		    ) {
 		addButton.setEnabled(true);
 		
@@ -166,6 +184,7 @@ public class AddSnippetDialog extends JDialog {
 	@Override
 	public void removeUpdate(DocumentEvent e) {
 	    if (txtSnippetTitle.getDocument().getLength() == 0
+		    || codeEditor.getDocument().getLength() == 0
 		    ) {
 		addButton.setEnabled(false);
 
