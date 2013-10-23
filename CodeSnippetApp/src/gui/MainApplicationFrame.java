@@ -11,12 +11,18 @@ import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import jsyntaxpane.DefaultSyntaxKit;
 
 import model.Snippet;
 import model.SnippetManager;
@@ -39,7 +45,7 @@ public class MainApplicationFrame extends JFrame {
     private JScrollPane scrollPane;
 
     private SnippetManager snippetManager;
-
+    ArrayList<Snippet> snippets;
     private JEditorPane codeEditor;
 
     public MainApplicationFrame() {
@@ -55,12 +61,16 @@ public class MainApplicationFrame extends JFrame {
     }
 
     private void initGUI() {
+	
+	// initalise the syntax formatting kit
+	DefaultSyntaxKit.initKit();
+	
 	// need a menu
 	setJMenuBar(makeMenu());
 
 	// left side panel
 	JPanel leftSidePanel = new JPanel();
-	leftSidePanel.setBackground(new Color(56, 32, 144));
+	leftSidePanel.setBackground(new Color(60, 60, 60));
 
 	// JPanel top left (the add and remove buttons)
 	JPanel topLeftPanel = new JPanel();
@@ -79,23 +89,28 @@ public class MainApplicationFrame extends JFrame {
 	// right side CENTER (will be the listview)
 	JPanel listViewPanel = new JPanel();
 
-	// TABLE MODEL build the list and add to the center panel
-	ArrayList<Snippet> snippets = snippetManager.getSnippets();
+	// get all of the snippets
+	snippets = snippetManager.getSnippets();
+
+	// build the table, add to a scrollpane and add to panel
 	tblModel = new SnippetTableModel(snippets);
 	table = new JTable(tblModel);
 	scrollPane = new JScrollPane(table);
 	listViewPanel.add(scrollPane);
 
+	// add a list selection listener to the table
+	table.getSelectionModel().addListSelectionListener(new SnippetListSelectionListener());
+
 	// right side SOUTH (will be a JEditorPane)
 	JPanel editorPanel = new JPanel();
-	editorPanel.setBackground(new Color(3, 123, 255));
+	editorPanel.setBackground(new Color(20, 20, 20));
 
 	codeEditor = new JEditorPane();
-	JScrollPane scrPane = new JScrollPane(codeEditor);	
-	//resize the codeEditor
+	JScrollPane scrPane = new JScrollPane(codeEditor);
+	// resize the codeEditor
 	codeEditor.setPreferredSize(new Dimension(600, 250));
 	editorPanel.add(scrPane);
-	
+
 	// add the top left panel to the CENTER of the leftSidePanel
 	leftSidePanel.add(topLeftPanel);
 
@@ -106,6 +121,7 @@ public class MainApplicationFrame extends JFrame {
 	getContentPane().add(leftSidePanel, BorderLayout.WEST);
 	getContentPane().add(rightSidePanel, BorderLayout.CENTER);
     }
+
 
 
     /**
@@ -125,10 +141,28 @@ public class MainApplicationFrame extends JFrame {
 	});
 
 	fileMenu.add(itemQuit);
-
 	menu.add(fileMenu);
 	return menu;
+    }
 
+    // inner listener class for the list selection
+    public class SnippetListSelectionListener implements ListSelectionListener {
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+	    
+	    if (e.getValueIsAdjusting())
+		return;
+	    
+	    // get the selected row from the table
+	    int index = table.getSelectedRow();
+
+	    // set the language of the selected snippet
+	    String langCode = snippets.get(index).getLanguage();
+	    codeEditor.setContentType("text/"+langCode );
+	    // set the text of the code editor to the text from that object in that row
+	    codeEditor.setText((snippets.get(index).getSnippetText()));
+	}
     }
 
 }
