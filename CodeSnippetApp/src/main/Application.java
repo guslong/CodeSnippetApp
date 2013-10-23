@@ -15,6 +15,6 @@ public class Application {
 
 	public static void test() {
 	    JFrame appFrame = new MainApplicationFrame();
-	    new AddSnippetDialog(appFrame);
+	   // new AddSnippetDialog(appFrame);
 	}
 }
