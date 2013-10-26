@@ -1,6 +1,5 @@
 package main;
 
-import gui.AddSnippetDialog;
 import gui.MainApplicationFrame;
 
 import javax.swing.JFrame;

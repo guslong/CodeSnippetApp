@@ -23,6 +23,7 @@ import model.Language;
 import model.Snippet;
 import model.SnippetManager;
 
+@SuppressWarnings("serial")
 public class AddSnippetDialog extends JDialog {
 
     public String language;
@@ -43,6 +44,7 @@ public class AddSnippetDialog extends JDialog {
     public AddSnippetDialog(final JFrame owner) {
 	// set the dialog title and size
 	super(owner, "Add Snippet", true);
+	setLocationRelativeTo(owner);
 	setSize(650, 400);
 	setLayout(new BorderLayout());
 	

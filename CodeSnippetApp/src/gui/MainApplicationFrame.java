@@ -11,30 +11,28 @@ import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import jsyntaxpane.DefaultSyntaxKit;
-
 import model.Snippet;
 import model.SnippetManager;
 import model.SnippetTableModel;
 
+@SuppressWarnings("serial")
 public class MainApplicationFrame extends JFrame {
 
     public static final String APPNAME = "Code Library";
 
     JMenuBar menuBar;
     JButton add = new JButton("+"); // add a snippet
-    JButton rem = new JButton("-"); // remove a snippet
+    JButton refresh = new JButton("refresh"); // refresh the view
     JLabel space = new JLabel(" ");
 
     /** Provides methods for displaying a SQL result set in a JTable */
@@ -55,16 +53,24 @@ public class MainApplicationFrame extends JFrame {
 
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	setPreferredSize(new Dimension(800, 600));
+	initData();
 	initGUI(); // just call this method to make it more readable what is going on here
 	pack();
 	setVisible(true);
     }
 
+    private void initData() {
+	// get all of the snippets
+	snippets = snippetManager.getSnippets();
+    }
+
     private void initGUI() {
-	
+
+	setTitle(APPNAME);
+
 	// initalise the syntax formatting kit
 	DefaultSyntaxKit.initKit();
-	
+
 	// need a menu
 	setJMenuBar(makeMenu());
 
@@ -75,8 +81,27 @@ public class MainApplicationFrame extends JFrame {
 	// JPanel top left (the add and remove buttons)
 	JPanel topLeftPanel = new JPanel();
 	topLeftPanel.add(add);
+	add.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		new AddSnippetDialog(MainApplicationFrame.this);
+	    }
+	    
+	});
 	topLeftPanel.add(space);
-	topLeftPanel.add(rem);
+	topLeftPanel.add(refresh);
+	refresh.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		if (tblModel != null) {
+		    tblModel.fireTableDataChanged();
+		}
+		
+	    }
+	    
+	});
 
 	// right side main panel (just a container)
 	JPanel rightSidePanel = new JPanel();
@@ -89,13 +114,14 @@ public class MainApplicationFrame extends JFrame {
 	// right side CENTER (will be the listview)
 	JPanel listViewPanel = new JPanel();
 
-	// get all of the snippets
-	snippets = snippetManager.getSnippets();
-
 	// build the table, add to a scrollpane and add to panel
 	tblModel = new SnippetTableModel(snippets);
 	table = new JTable(tblModel);
+	table.getColumnModel().getColumn(0).setPreferredWidth(160);
+	table.getColumnModel().getColumn(1).setPreferredWidth(20);
+	table.getColumnModel().getColumn(2).setPreferredWidth(20);
 	scrollPane = new JScrollPane(table);
+	scrollPane.setPreferredSize(new Dimension(600,245));
 	listViewPanel.add(scrollPane);
 
 	// add a list selection listener to the table
@@ -103,12 +129,15 @@ public class MainApplicationFrame extends JFrame {
 
 	// right side SOUTH (will be a JEditorPane)
 	JPanel editorPanel = new JPanel();
-	editorPanel.setBackground(new Color(20, 20, 20));
 
 	codeEditor = new JEditorPane();
 	JScrollPane scrPane = new JScrollPane(codeEditor);
 	// resize the codeEditor
 	codeEditor.setPreferredSize(new Dimension(600, 250));
+
+	// for now, we can't edit the text in there
+	codeEditor.setEditable(false);
+
 	editorPanel.add(scrPane);
 
 	// add the top left panel to the CENTER of the leftSidePanel
@@ -122,8 +151,6 @@ public class MainApplicationFrame extends JFrame {
 	getContentPane().add(rightSidePanel, BorderLayout.CENTER);
     }
 
-
-
     /**
      * creates a JMenuBar with "File" menu and "Quit" menu item If Quit is selected, a dialog asks the user if they want
      * to save the database state.
@@ -133,6 +160,15 @@ public class MainApplicationFrame extends JFrame {
     public JMenuBar makeMenu() {
 	JMenuBar menu = new JMenuBar();
 	JMenu fileMenu = new JMenu("File");
+	JMenuItem itemNew = new JMenuItem("New Snippet...");
+	itemNew.addActionListener(new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		new AddSnippetDialog(MainApplicationFrame.this);
+
+	    }
+	    
+	});
 	JMenuItem itemQuit = new JMenuItem("Quit");
 	itemQuit.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
@@ -140,6 +176,9 @@ public class MainApplicationFrame extends JFrame {
 	    }
 	});
 
+	
+	fileMenu.add(itemNew);
+	fileMenu.addSeparator();
 	fileMenu.add(itemQuit);
 	menu.add(fileMenu);
 	return menu;
@@ -150,16 +189,16 @@ public class MainApplicationFrame extends JFrame {
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-	    
+
 	    if (e.getValueIsAdjusting())
 		return;
-	    
+
 	    // get the selected row from the table
 	    int index = table.getSelectedRow();
 
 	    // set the language of the selected snippet
 	    String langCode = snippets.get(index).getLanguage();
-	    codeEditor.setContentType("text/"+langCode );
+	    codeEditor.setContentType("text/" + langCode);
 	    // set the text of the code editor to the text from that object in that row
 	    codeEditor.setText((snippets.get(index).getSnippetText()));
 	}
