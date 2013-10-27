@@ -22,10 +22,10 @@ public class DatabaseManager {
     public static final String DB_NAME = "addressBookDB";
 
     /** username */
-    public static final String USERNAME = "root";
+    public static final String USERNAME = "snippetuser";
 
     /** password */
-    public static final String PASSWORD = "Glasn0st!";
+    public static final String PASSWORD = "hello123";
 
     /** table name */
     public static final String TABLE_NAME = "snippet";
@@ -194,8 +194,11 @@ public class DatabaseManager {
 	// Create a new table
 	String SQL = "create table " + TABLE_NAME + " ("
 		+ "ID int NOT NULL PRIMARY KEY AUTO_INCREMENT, "
-		+ "SNIPPET_TITLE  varchar (64)," + "SNIPPET_TEXT text,"
-		+ "SNIPPET_LANG varchar(16)" + ");";
+		+ "SNIPPET_TITLE  varchar (64), "
+		+ "SNIPPET_TEXT text, "
+		+ "SNIPPET_LANG varchar(16), "
+		+ "DATE_CREATED datetime"
+		+ ");";
 	return SQL;
     }
 }
